@@ -16,11 +16,17 @@ public class UIUpdater : MonoBehaviour
     [SerializeField] private float animationSpeed = 30f;
     [SerializeField] private float colorChangeSmooth = 0.8f;
     
+    private Coroutine _updateCoroutine;
     private float _playerHealth;
     private float _playerMaxHealth;
     private readonly float _valueChangeTreshold = 0.01f;
     
     private void Awake()
+    {
+        InitializeView();    
+    }
+
+    private void InitializeView()
     {
         _playerHealth = player.GetHealth();
         _playerMaxHealth = player.GetMaxHealth();
@@ -35,7 +41,7 @@ public class UIUpdater : MonoBehaviour
         
         healthStatus.SetText("Health: " + _playerHealth);
     }
-
+    
     private void OnEnable()
     {
         player.OnPlayerGetHeal += PlayerGetHealHandler;
@@ -51,15 +57,24 @@ public class UIUpdater : MonoBehaviour
     private void PlayerGetHealHandler(float heal)
     {
         _playerHealth += heal;
-        StartCoroutine(HealthViewUpdate());
+        UpdateUI();
     }
 
     private void PlayerTakeDamageHandler(float damage)
     {
         _playerHealth -= damage;
-        StartCoroutine(HealthViewUpdate());
+        UpdateUI();
     }
 
+    private void UpdateUI()
+    {
+        if (_updateCoroutine != null)
+        {
+            StopCoroutine(_updateCoroutine);
+        }
+        StartCoroutine(HealthViewUpdate());
+    }
+    
     private IEnumerator HealthViewUpdate()
     {
         _playerHealth = Mathf.Clamp(_playerHealth, 0, _playerMaxHealth);
@@ -68,7 +83,7 @@ public class UIUpdater : MonoBehaviour
             healthBarImage.color = Color.Lerp(
                 healthBarImage.color,
                 healthBar.value < _playerHealth ? fullHealthColor : emptyHealthColor, 
-                Time.deltaTime * colorChangeSmooth);
+                Mathf.Clamp01(colorChangeSmooth * Time.deltaTime));
 
             healthBar.value = Mathf.MoveTowards(
                 healthBar.value, 
