@@ -3,8 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(PlayerController))]
-
 public class UIUpdater : MonoBehaviour
 {
     [SerializeField] private PlayerController player;
