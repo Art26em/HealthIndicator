@@ -1026,8 +1026,8 @@ MonoBehaviour:
   healthBarImage: {fileID: 958795059}
   fullHealthColor: {r: 0.35686275, g: 0.8352942, b: 0.10588236, a: 1}
   emptyHealthColor: {r: 0.9215687, g: 0.3137255, b: 0.32156864, a: 1}
-  animationSpeed: 1
-  colorChangeSmooth: 0.5
+  animationSpeed: 30
+  colorChangeSmooth: 0.8
 --- !u!114 &1082255581
 MonoBehaviour:
   m_ObjectHideFlags: 0

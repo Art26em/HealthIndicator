@@ -24,9 +24,16 @@ public class UIUpdater : MonoBehaviour
     {
         _playerHealth = player.GetHealth();
         _playerMaxHealth = player.GetMaxHealth();
-        healthStatus.SetText("Health: " + _playerHealth);
+       
         healthBar.maxValue = _playerMaxHealth;
         healthBar.value = _playerHealth;
+        
+        healthBarImage.color = Color.Lerp(
+            healthBarImage.color,
+            healthBar.value < _playerHealth ? fullHealthColor : emptyHealthColor, 
+            colorChangeSmooth);
+        
+        healthStatus.SetText("Health: " + _playerHealth);
     }
 
     private void OnEnable()
@@ -44,25 +51,18 @@ public class UIUpdater : MonoBehaviour
     private void PlayerGetHealHandler(float heal)
     {
         _playerHealth += heal;
-        if (_playerHealth > _playerMaxHealth)
-        {
-            _playerHealth = _playerMaxHealth;
-        }
         StartCoroutine(HealthViewUpdate());
     }
 
     private void PlayerTakeDamageHandler(float damage)
     {
         _playerHealth -= damage;
-        if (_playerHealth < 0)
-        {
-            _playerHealth = 0;
-        }
         StartCoroutine(HealthViewUpdate());
     }
 
     private IEnumerator HealthViewUpdate()
     {
+        _playerHealth = Mathf.Clamp(_playerHealth, 0, _playerMaxHealth);
         while (Mathf.Abs(healthBar.value - _playerHealth) > _valueChangeTreshold)
         {
             healthBarImage.color = Color.Lerp(
